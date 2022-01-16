@@ -1,5 +1,6 @@
 import requests
 import pandas as pd
+import csv
 
 #url = "https://www.ncdc.noaa.gov/cdo-web/api/v2/locations"
 
@@ -24,6 +25,8 @@ get_noaa_data(url, dtype, creds)
 
 
 # NWS weather API
+Lat = 39.7456
+Lon = -97.0892
 
 # get info about correct end points with Lat, Lon
 url = "https://api.weather.gov/points/39.7456,-97.0892"
@@ -45,3 +48,22 @@ data = data.json()
 data_df = pd.DataFrame.from_dict(data['properties']['periods'])
 data_df.to_csv('forecast.csv',index=False)
 data_df.to_excel("forecast.xlsx",index=False)
+
+# get latest observation of a weather station
+
+url = "https://api.weather.gov/stations/KPHX/observations/latest"
+data = requests.get(url)
+data = data.json()
+
+keys = ['temperature', 'dewpoint', 'windDirection', 'windSpeed','windSpeed','windGust','barometricPressure','seaLevelPressure','visibility','maxTemperatureLast24Hours','minTemperatureLast24Hours','precipitationLastHour',
+'precipitationLast3Hours','precipitationLast6Hours','relativeHumidity','windChill','heatIndex']
+data_selection= {x:data['properties'][x] for x in keys}
+
+data_df = pd.DataFrame.from_dict(data_selection)
+data_df.to_csv('presentweather.csv',index=True)
+data_df.to_excel("presentweather.xlsx",index=True)
+
+with open('presentweather.csv', 'w') as csv_file:
+    writer = csv.writer(csv_file)
+    for key, value in data['properties'].items():
+       writer.writerow([key, value])
