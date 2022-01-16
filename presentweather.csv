@@ -1,0 +1,4 @@
+,temperature,dewpoint,windDirection,windSpeed,windGust,barometricPressure,seaLevelPressure,visibility,maxTemperatureLast24Hours,minTemperatureLast24Hours,precipitationLastHour,precipitationLast3Hours,precipitationLast6Hours,relativeHumidity,windChill,heatIndex
+unitCode,wmoUnit:degC,wmoUnit:degC,wmoUnit:degree_(angle),wmoUnit:km_h-1,wmoUnit:km_h-1,wmoUnit:Pa,wmoUnit:Pa,wmoUnit:m,wmoUnit:degC,wmoUnit:degC,wmoUnit:m,wmoUnit:m,wmoUnit:m,wmoUnit:percent,wmoUnit:degC,wmoUnit:degC
+value,8.3,-3.9,0,,,101930,101880,16090,,,,,,41.917509969514,,
+qualityControl,V,V,V,Z,Z,V,V,C,,,Z,Z,Z,V,V,V
