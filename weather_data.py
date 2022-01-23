@@ -2,68 +2,59 @@ import requests
 import pandas as pd
 import csv
 
-#url = "https://www.ncdc.noaa.gov/cdo-web/api/v2/locations"
+# get weather data from visualcrossing - worldwide access to historical and forecast data
 
-#data = requests.get(url)
-#data = data.json()
+api_key = 'GSBMDJLRQK5P7UK5UEKEXQTR4'
+start_date = '2022-01-22T15:00:00'     # date format yyyy-MM-dd or yyyy-MM-ddTHH:mm:ss (will be rounded to the closest hour)
+end_date = '2022-01-22T15:00:00'
 
-# NOAA weather API
+location = 'Braunschweig'
 
-def get_noaa_data(url, data_type, header):
+unitGroup = 'metric' # Supported values are us, uk, metric, base - default US
 
-    data = requests.get(url, data_type, headers=header)
+
+url = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/'+location+'/'+start_date+'/'+end_date+'?key='+api_key+'&unitGroup='+unitGroup+'&include=alerts'
+data = requests.get(url)
+data = data.json()
+
+#data['days']
+#data['days'][0]['hours']
+
+# forecast
+url = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/Braunschweig?key='+api_key+'&unitGroup='+unitGroup+'&include=alerts'
+
+def weather_at_obs(start_date,end_date,lat,lon,unitGroup):
+    # Get historical weather data for specific date and time
+
+    # date format yyyy-MM-dd or yyyy-MM-ddTHH:mm:ss
+    # lat: latitude (°)
+    # lon: longitude (°)
+    # unitGroup: Supported values are us, uk, metric, base - default is US
+    # units for the variables can be looked up here: https://www.visualcrossing.com/resources/documentation/weather-api/unit-groups-and-measurement-units/
+
+    latlon = str(lat)+','+str(lon)
+
+    api_key = 'GSBMDJLRQK5P7UK5UEKEXQTR4'
+    url = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/'+location+'/'+start_date+'/'+end_date+'?key='+api_key+'&unitGroup='+unitGroup+'&include=alerts'
+    data = requests.get(url)
     data = data.json()
-    print(data)
 
+    data_df = pd.DataFrame.from_dict(data['days'])
+    data_df.to_csv('weather_at_obs.csv',index=False)
+    data_df.to_excel("weather_at_obs.xlsx",index=False)
 
-token = 'nFkmRqoPvCvOQMsWSGMhHsmKVzRrIemZ'
-creds = dict(token=token)
-dtype = 'dataset'
-url = 'https://www.ncdc.noaa.gov/cdo-web/api/v2/'
+def weather_forecast(lat,lon,unitGroup):
+    # Get weather forecast for the next 14 days
 
-get_noaa_data(url, dtype, creds)
+    # date format yyyy-MM-dd or yyyy-MM-ddTHH:mm:ss
+    # lat: latitude (°)
+    # lon: longitude (°)
+    # unitGroup: Supported values are us, uk, metric, base - default is US
+    # units for the variables can be looked up here: https://www.visualcrossing.com/resources/documentation/weather-api/unit-groups-and-measurement-units/
 
-
-# NWS weather API
-Lat = 39.7456
-Lon = -97.0892
-
-# get info about correct end points with Lat, Lon
-url = "https://api.weather.gov/points/39.7456,-97.0892"
-data = requests.get(url)
-data = data.json()
-
-gridX = data['properties']['gridX']
-gridY = data['properties']['gridY']
-office = data['properties']['cwa']
-
-# get weather forecast
-# structure: https://api.weather.gov/gridpoints/{office}/{grid X},{grid Y}/forecast
-url = "https://api.weather.gov/gridpoints/"+str(office)+"/"+str(gridX)+","+str(gridY)+"/forecast"
-
-data = requests.get(url)
-data = data.json()
-
-
-data_df = pd.DataFrame.from_dict(data['properties']['periods'])
-data_df.to_csv('forecast.csv',index=False)
-data_df.to_excel("forecast.xlsx",index=False)
-
-# get latest observation of a weather station
-
-url = "https://api.weather.gov/stations/KPHX/observations/latest"
-data = requests.get(url)
-data = data.json()
-
-keys = ['temperature', 'dewpoint', 'windDirection', 'windSpeed','windSpeed','windGust','barometricPressure','seaLevelPressure','visibility','maxTemperatureLast24Hours','minTemperatureLast24Hours','precipitationLastHour',
-'precipitationLast3Hours','precipitationLast6Hours','relativeHumidity','windChill','heatIndex']
-data_selection= {x:data['properties'][x] for x in keys}
-
-data_df = pd.DataFrame.from_dict(data_selection)
-data_df.to_csv('presentweather.csv',index=True)
-data_df.to_excel("presentweather.xlsx",index=True)
-
-with open('presentweather.csv', 'w') as csv_file:
-    writer = csv.writer(csv_file)
-    for key, value in data['properties'].items():
-       writer.writerow([key, value])
+    latlon = str(lat)+','+str(lon)
+    url = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/'+latlon+'?key=YOUR_API_KEY'
+    alerts = data['alerts']
+    data_df = pd.DataFrame.from_dict(data['days'])
+    data_df.to_csv('weather_forecast.csv',index=False)
+    data_df.to_excel("weather_forecast.xlsx",index=False)
