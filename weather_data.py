@@ -4,7 +4,7 @@ import csv
 
 # get weather data from visualcrossing - worldwide access to historical and forecast data
 
-api_key = 'GSBMDJLRQK5P7UK5UEKEXQTR4'
+api_key = ''
 start_date = '2022-01-22T15:00:00'     # date format yyyy-MM-dd or yyyy-MM-ddTHH:mm:ss (will be rounded to the closest hour)
 end_date = '2022-01-22T15:00:00'
 
@@ -34,7 +34,7 @@ def weather_at_obs(start_date,end_date,lat,lon,unitGroup):
 
     latlon = str(lat)+','+str(lon)
 
-    api_key = 'GSBMDJLRQK5P7UK5UEKEXQTR4'
+    api_key = ''
     url = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/'+location+'/'+start_date+'/'+end_date+'?key='+api_key+'&unitGroup='+unitGroup+'&include=alerts'
     data = requests.get(url)
     data = data.json()
